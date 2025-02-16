@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Response, Depends
-from app.exceptions import UserAlreadyExistsException, IncorrectEmailOrPasswordException
-from app.users.auth import get_password_hash, authenticate_user, create_access_token
-from app.users.dao import UsersDAO
-from app.users.dependencies import get_current_user, get_current_admin_user
-from app.users.models import User
-from app.users.schemas import SUserRegister, SUserAuth
+from core.exceptions import UserAlreadyExistsException, IncorrectEmailOrPasswordException
+from core.auth import get_password_hash, authenticate_user, create_access_token
+from core.models.dao import UsersDAO
+from core.dependencies import get_current_user, get_current_admin_user
+from core.models.user import User
+from core.schemas.user import SUserRegister, SUserAuth
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
