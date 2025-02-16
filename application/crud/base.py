@@ -65,7 +65,7 @@ async def update(model, filter_by, **values):
 async def delete(model, delete_all: bool = False, **filter_by):
     if delete_all is False:
         if not filter_by:
-            raise ValueError("Необходимо указать хотя бы один параметр для удаления.")
+            raise ValueError("You must specify at least one parameter to delete.")
     
     async with async_session_maker() as session:
         async with session.begin():
