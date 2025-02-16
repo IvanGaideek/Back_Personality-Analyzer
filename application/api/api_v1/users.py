@@ -17,7 +17,7 @@ async def register_user(user_data: SUserRegister) -> dict:
     user_dict = user_data.dict()
     user_dict['password'] = get_password_hash(user_data.password)
     await UsersDAO.add(**user_dict)
-    return {'message': f'Вы успешно зарегистрированы!'}
+    return {'message': f'You have successfully registered!'}
 
 
 @router.post("/login/")
@@ -27,13 +27,13 @@ async def auth_user(response: Response, user_data: SUserAuth):
         raise IncorrectEmailOrPasswordException
     access_token = create_access_token({"sub": str(check.id)})
     response.set_cookie(key="users_access_token", value=access_token, httponly=True)
-    return {'ok': True, 'access_token': access_token, 'refresh_token': None, 'message': 'Авторизация успешна!'}
+    return {'ok': True, 'access_token': access_token, 'refresh_token': None, 'message': 'Authorization is successf!'}
 
 
 @router.post("/logout/")
 async def logout_user(response: Response):
     response.delete_cookie(key="users_access_token")
-    return {'message': 'Пользователь успешно вышел из системы'}
+    return {'message': 'The user has successfully logged out'}
 
 
 @router.get("/me/")
