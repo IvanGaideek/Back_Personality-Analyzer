@@ -1,7 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete
-from app.database import async_session_maker
+from application.app.database import async_session_maker
 
 async def find_one_or_none_by_id(model, data_id: int):
     async with async_session_maker() as session:
