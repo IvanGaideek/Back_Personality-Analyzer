@@ -12,3 +12,5 @@
 **Commands for docker**:
 * create command: docker compose up -d pg
 * valid(works docker?): docker compose ps
+
+Running in project file: application/main.py

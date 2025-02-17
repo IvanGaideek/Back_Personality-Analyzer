@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 from pydantic import PostgresDsn
 from pydantic_settings import (
     BaseSettings,
@@ -60,6 +60,12 @@ class DatabaseConfig(BaseModel):
     }
 
 
+class JWTConfig(BaseModel):
+    key: SecretStr = SecretStr("")
+    algorithm: str = ""
+    access_token_expire_minutes: int = 30
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -72,6 +78,7 @@ class Settings(BaseSettings):
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig = DatabaseConfig()
+    jwt: JWTConfig = JWTConfig()
 
 
 settings = Settings()

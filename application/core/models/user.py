@@ -1,4 +1,4 @@
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
@@ -7,10 +7,6 @@ from .mixins.int_id_pk import IntIdPkMixin
 
 
 class User(IntIdPkMixin, Base):
-    username: Mapped[str] = mapped_column(unique=True)
-    foo: Mapped[int]
-    bar: Mapped[int]
-
-    __table_args__ = (
-        UniqueConstraint("foo", "bar"),
-    )
+    username: Mapped[str] = mapped_column(String, nullable=False, unique=True)  # уникальный username
+    email: Mapped[str] = mapped_column(String, nullable=False, unique=True)  # уникальный email
+    password: Mapped[str] = mapped_column(String, nullable=False)
