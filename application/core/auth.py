@@ -3,7 +3,7 @@ from pydantic import EmailStr
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 from application.core.config.Settings.db import url
-from application.core.models.dao.py import UsersDAO
+from application.core.models.dao import UsersDAO
 
 
 def create_access_token(data: dict) -> str:
