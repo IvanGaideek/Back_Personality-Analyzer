@@ -3,6 +3,9 @@ from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete
 from application.core.modele.database_user import async_session_maker
 
+class BaseDAO:
+    model = None
+
 async def find_one_or_none_by_id(model, data_id: int):
     async with async_session_maker() as session:
         query = select(model).filter_by(id=data_id)
