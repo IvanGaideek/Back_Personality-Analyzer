@@ -1,6 +1,6 @@
 from sqlalchemy import text
 from sqlalchemy.orm import Mapped, mapped_column
-from application.core.models.database import Base, str_uniq, int_pk
+from application.core.models.database_user import Base, str_uniq, int_pk
 
 
 class User(Base):
