@@ -1,24 +1,27 @@
 from datetime import timedelta
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
-from core.schemas.user import UserCreate, UserLogin, Token
+from core.schemas.user import UserCreate, UserLogin, Token, UserBase
 from core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 from crud import users as users_crud
 
 router = APIRouter(tags=["Users"])
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserBase, status_code=status.HTTP_201_CREATED)
 async def register_user(
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         user_create: UserCreate,
 ):
     try:
         user = await users_crud.create_user(session=session, user_create=user_create)
-        return user
+        return UserBase(
+            username=user.username,
+            email=user.email
+        )
     except HTTPException as e:
         raise e
     except Exception as e:
@@ -30,7 +33,6 @@ async def register_user(
 
 @router.post("/login", response_model=Token)
 async def login(
-        response: Response,
         session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         login_data: UserLogin,
 ):
@@ -52,35 +54,25 @@ async def login(
         expires_delta=access_token_expires
     )
 
-    response.set_cookie(
-        key="access_token",
-        value=f"Bearer {access_token}",
-        httponly=True,
-        max_age=1800,
-        secure=True,
-        samesite="lax"
-    )
-
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/logout")
-async def logout(
-        response: Response,
-        access_token: Annotated[str, Cookie(alias="access_token")] = None,
+# Пример защищенного эндпоинта
+@router.get("/me", response_model=UserBase)
+async def read_users_me(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    token: str
 ):
-    if not access_token:
+    try:
+        user = await users_crud.get_current_user(session=session, token=token)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+            )
+        return user
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated"
+            detail="Could not validate credentials",
         )
-
-    # Удаляем куки
-    response.delete_cookie(
-        key="access_token",
-        httponly=True,
-        secure=True,
-        samesite="lax"
-    )
-
-    return {"message": "Successfully logged out"}

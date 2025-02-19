@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 from core.models import User
 from core.schemas.user import UserCreate
-from core.security import get_password_hash, verify_password
+from core.security import get_password_hash, verify_password, get_email_from_token
 
 
 async def get_all_users(session: AsyncSession) -> Sequence[User]:
@@ -54,4 +54,14 @@ async def authenticate_user(
         return None
     if not verify_password(password, user.password):
         return None
+    return user
+
+
+async def get_current_user(session: AsyncSession, token: str):
+    email = get_email_from_token(token)
+    if email is None:
+        raise None
+
+    # Получаем пользователя по email
+    user = await get_user_by_email(session, email)
     return user

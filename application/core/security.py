@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 import bcrypt
-from jose import JWTError, jwt
-from fastapi import HTTPException, status
+from jose import jwt, JWTError
 from core.config import settings
 
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.jwt.access_token_expire_minutes
@@ -28,3 +27,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.jwt.key.get_secret_value(), algorithm=settings.jwt.algorithm)
     return encoded_jwt
+
+
+def get_email_from_token(token: str) -> str:
+    try:
+        payload = jwt.decode(token, settings.jwt.key.get_secret_value(), algorithms=settings.jwt.algorithm)
+        email: str = payload.get("sub")
+        return email
+    except JWTError:
+        return None
