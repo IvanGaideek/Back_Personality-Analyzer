@@ -63,7 +63,8 @@ class DatabaseConfig(BaseModel):
 class JWTConfig(BaseModel):
     key: SecretStr = SecretStr("")
     algorithm: str = ""
-    access_token_expire_minutes: int = 30
+    access_token_expire_minutes: int = 60  # 1 hour
+    expire_long_minutes: int = 14400  # 5 days
 
 
 class Settings(BaseSettings):

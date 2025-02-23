@@ -5,11 +5,15 @@ class UserBase(BaseModel):
     email: EmailStr = Field(...)  # ... означает обязательное поле
 
 
-class UserLogin(UserBase):
+class UserClearLogin(UserBase):
     password: str = Field(..., min_length=8, max_length=64)
 
 
-class UserCreate(UserLogin):
+class UserLogin(UserClearLogin):
+    remember_me: bool
+
+
+class UserCreate(UserClearLogin):
     username: str = Field(..., min_length=2, max_length=32)
 
 

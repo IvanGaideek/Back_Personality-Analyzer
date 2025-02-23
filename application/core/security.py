@@ -39,8 +39,8 @@ def get_email_from_token(token: str):
         raise None
 
 
-def get_collected_token(params: dict) -> str:
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+def get_collected_token(params: dict, remember_me: bool = False) -> str:
+    access_token_expires = timedelta(minutes=settings.jwt.expire_long_minutes if remember_me else ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data=params,
         expires_delta=access_token_expires

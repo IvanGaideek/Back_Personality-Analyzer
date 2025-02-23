@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
@@ -49,9 +49,8 @@ async def login(
                 detail="Incorrect email or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-
         params = {"email": user.email, "username": user.username}
-        access_token = get_collected_token(params)
+        access_token = get_collected_token(params, remember_me=login_data.remember_me)
 
         return {"access_token": access_token, "token_type": "Bearer"}
     except HTTPException as e:
