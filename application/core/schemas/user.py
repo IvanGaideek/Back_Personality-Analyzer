@@ -2,17 +2,19 @@ from pydantic import BaseModel, EmailStr, Field
 
 
 class UserBase(BaseModel):
-    username: str = Field(..., min_length=2, max_length=32)  # ... означает обязательное поле
-    email: EmailStr = Field(...)
+    email: EmailStr = Field(...)  # ... означает обязательное поле
 
 
-class UserCreate(UserBase):
-    password: str = Field(..., min_length=8, max_length=16)
+class UserLogin(UserBase):
+    password: str = Field(..., min_length=8, max_length=64)
 
 
-class UserLogin(BaseModel):
-    email: EmailStr = Field(...)
-    password: str = Field(..., min_length=8, max_length=16)
+class UserCreate(UserLogin):
+    username: str = Field(..., min_length=2, max_length=32)
+
+
+class User(UserBase):
+    username: str
 
 
 class Token(BaseModel):

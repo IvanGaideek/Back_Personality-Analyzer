@@ -26,13 +26,23 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.jwt.key.get_secret_value(), algorithm=settings.jwt.algorithm)
+
     return encoded_jwt
 
 
-def get_email_from_token(token: str) -> str:
+def get_email_from_token(token: str):
     try:
-        payload = jwt.decode(token, settings.jwt.key.get_secret_value(), algorithms=settings.jwt.algorithm)
-        email: str = payload.get("sub")
+        payload = jwt.decode(token, settings.jwt.key.get_secret_value(), algorithms=[settings.jwt.algorithm])
+        email: str = payload.get("email")
         return email
     except JWTError:
-        return None
+        raise None
+
+
+def get_collected_token(params: dict) -> str:
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data=params,
+        expires_delta=access_token_expires
+    )
+    return access_token

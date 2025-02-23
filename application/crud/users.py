@@ -20,13 +20,27 @@ async def get_user_by_email(session: AsyncSession, email: str) -> Optional[User]
     return result
 
 
+async def get_user_by_username(session: AsyncSession, username: str) -> Optional[User]:
+    stmt = select(User).where(User.username == username)
+    result = await session.scalar(stmt)
+    return result
+
+
 async def create_user(session: AsyncSession, user_create: UserCreate) -> User:
-    # Проверяем, существует ли пользователь с таким email
-    existing_user = await get_user_by_email(session, user_create.email)
-    if existing_user:
+    # Проверяем, существует ли пользователь с таким email или username
+    existing_user_email = await get_user_by_email(session, user_create.email)
+    existing_user_username = await get_user_by_username(session, user_create.username)
+
+    if existing_user_email:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User with this email already exists"
+        )
+
+    if existing_user_username:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this username already exists"
         )
 
     try:
