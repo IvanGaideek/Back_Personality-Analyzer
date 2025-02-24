@@ -30,12 +30,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-def get_email_from_token(token: str):
+def get_id_from_token(token: str):
     try:
         payload = jwt.decode(token, settings.jwt.key.get_secret_value(), algorithms=[settings.jwt.algorithm])
-        email: str = payload.get("email")
-        return email
-    except JWTError:
+        sub = int(payload.get("sub"))
+        return sub
+    except JWTError as ex:
         raise None
 
 

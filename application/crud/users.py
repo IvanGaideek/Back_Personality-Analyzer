@@ -1,11 +1,12 @@
-from typing import Sequence, Optional
+from typing import Sequence, Optional, Annotated
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException, status
-from core.models import User
+from fastapi import HTTPException, status, Depends
+from core.models import User, db_helper
 from core.schemas.user import UserCreate
-from core.security import get_password_hash, verify_password, get_email_from_token
+from core.security import get_password_hash, verify_password, get_id_from_token
 
 
 async def get_all_users(session: AsyncSession) -> Sequence[User]:
@@ -22,6 +23,12 @@ async def get_user_by_email(session: AsyncSession, email: str) -> Optional[User]
 
 async def get_user_by_username(session: AsyncSession, username: str) -> Optional[User]:
     stmt = select(User).where(User.username == username)
+    result = await session.scalar(stmt)
+    return result
+
+
+async def get_user_by_id(session: AsyncSession, id: int) -> Optional[User]:
+    stmt = select(User).where(User.id == id)
     result = await session.scalar(stmt)
     return result
 
@@ -71,11 +78,31 @@ async def authenticate_user(
     return user
 
 
-async def get_current_user(session: AsyncSession, token: str):
-    email = get_email_from_token(token)
-    if email is None:
-        raise None
-
-    # Получаем пользователя по email
-    user = await get_user_by_email(session, email)
-    return user
+async def get_current_user(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+    authorization: str
+) -> User:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    try:
+        token = authorization.split(" ")[-1]
+        id_user = get_id_from_token(token)
+        if id_user is None:
+            raise None
+        user = await get_user_by_id(session, id_user)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        return user
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"}
+        )

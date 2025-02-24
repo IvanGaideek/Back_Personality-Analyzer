@@ -18,7 +18,7 @@ async def register_user(
     try:
         user = await users_crud.create_user(session=session, user_create=user_create)
 
-        params = {"email": user.email, "username": user.username}
+        params = {"sub": str(user.id)}
         access_token = get_collected_token(params)
 
         return {"access_token": access_token, "token_type": "Bearer"}
@@ -49,7 +49,7 @@ async def login(
                 detail="Incorrect email or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        params = {"email": user.email, "username": user.username}
+        params = {"sub": str(user.id)}
         access_token = get_collected_token(params, remember_me=login_data.remember_me)
 
         return {"access_token": access_token, "token_type": "Bearer"}
@@ -62,29 +62,11 @@ async def login(
         )
 
 
-# Защищённый эндпоинта
 @router.get("/me", response_model=User)
 async def read_users_me(
-    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    authorization: str
+    current_user: Annotated[User, Depends(users_crud.get_current_user)]
 ):
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    try:
-        token = authorization.split(" ")[-1]
-        user = await users_crud.get_current_user(session=session, token=token)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
-        return {"email": user.email, "username": user.username}
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_412_PRECONDITION_FAILED,
-            detail="Some kind of glitch has occurred.",
-        )
+    return {
+        "email": current_user.email,
+        "username": current_user.username
+    }
