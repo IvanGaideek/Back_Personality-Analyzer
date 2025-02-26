@@ -70,3 +70,24 @@ async def read_users_me(
         "email": current_user.email,
         "username": current_user.username
     }
+
+
+@router.get("/profile", response_model=User)
+async def get_user_profile(
+        session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+        current_user: Annotated[User, Depends(users_crud.get_current_user)]
+):
+    try:
+        return {
+            "email": current_user.email,
+            "username": current_user.username,
+            # Другие поля профиля
+        }
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while fetching user profile"
+        )
