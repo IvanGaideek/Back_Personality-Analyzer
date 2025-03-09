@@ -67,6 +67,13 @@ class JWTConfig(BaseModel):
     expire_long_minutes: int = 14400  # 5 days
 
 
+class NeuralTfConfig(BaseModel):
+    path_tokenizer_mbti: str = "./tokenizer/tokenizer_mbti.pickle"
+    path_tokenizer_fraud_detection: str = "./tokenizer/tokenizer_fraud_detection.pickle"
+    host: str = "localhost"
+    port: int = 8500
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -80,6 +87,7 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig = DatabaseConfig()
     jwt: JWTConfig = JWTConfig()
+    neural_tf: NeuralTfConfig = NeuralTfConfig()
 
 
 settings = Settings()
