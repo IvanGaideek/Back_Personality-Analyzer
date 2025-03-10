@@ -4,7 +4,7 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc
 
 from core.config import settings
 from core.get_tf_serving.builder_request import get_predict_request
-from core.get_tf_serving.preprocessing_texts import preprocess_text_fraud_detection
+from core.get_tf_serving.preprocessing_texts import preprocess_text_fraud_detection, preprocess_text_fraud_mbti
 from core.get_tf_serving.tokenizer import get_tokenizer
 
 tokenizer_mbti = get_tokenizer(settings.neural_tf.mbti_neural.path_tokenizer_mbti)
@@ -21,7 +21,18 @@ def get_response(request, timeout=5):
 
 
 def get_result_mbti(texts: list):
-    pass
+    processed_texts = preprocess_text_fraud_mbti(texts)
+    tokenized_texts = tokenizer_mbti.to_data_for_model(processed_texts)
+    request = get_predict_request(tokenized_texts,
+                                  settings.neural_tf.mbti_neural.name_model,
+                                  settings.neural_tf.mbti_neural.signature_name,
+                                  settings.neural_tf.mbti_neural.input_name,)
+    setting_timeout = settings.neural_tf.mbti_neural.timeout
+    response, output_name = get_response(request, setting_timeout)
+    output_proto = response.outputs[output_name]
+    y_proba = np.array(output_proto.float_val).round(4)
+    y_proba = y_proba.reshape(-1, 4)  # 4 классификаций MBTI (буквы)
+    return y_proba
 
 
 def get_result_fraud_detection(texts: list):

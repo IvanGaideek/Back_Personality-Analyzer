@@ -177,3 +177,4 @@ def preprocess_text_fraud_mbti(examples):
         el = re.sub(r'\|\|\|', ' ', el)
         el = re.sub(r'!', ' exclamationpoint', el)
         examples[num] = re.sub(r"[,.!?;:'\"(){}$$<>_/\\@#$%^&*\-+=~`]", ' ', el)
+    return examples
