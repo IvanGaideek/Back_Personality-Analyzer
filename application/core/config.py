@@ -67,11 +67,25 @@ class JWTConfig(BaseModel):
     expire_long_minutes: int = 14400  # 5 days
 
 
-class NeuralTfConfig(BaseModel):
+class MbtiNeural(BaseModel):
     path_tokenizer_mbti: str = "./tokenizer/tokenizer_mbti.pickle"
+    name_model: str = 'mbti'
+    signature_name: str = 'serving_default'
+    input_name: str = 'embedding_2_input'
+
+
+class FraudDetectionNeural(BaseModel):
     path_tokenizer_fraud_detection: str = "./tokenizer/tokenizer_fraud_detection.pickle"
+    name_model: str = 'fraud_detection'
+    signature_name: str = 'serving_default'
+    input_name: str = 'embedding_input'
+
+
+class NeuralTfConfig(BaseModel):
     host: str = "localhost"
     port: int = 8500
+    mbti_neural: MbtiNeural = MbtiNeural()
+    fraud_detection_neural: FraudDetectionNeural = FraudDetectionNeural()
 
 
 class Settings(BaseSettings):
