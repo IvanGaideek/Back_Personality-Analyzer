@@ -1,0 +1,40 @@
+import grpc
+import numpy as np
+from tensorflow_serving.apis import prediction_service_pb2_grpc
+
+from core.config import settings
+from core.get_tf_serving.builder_request import get_predict_request
+from core.get_tf_serving.preprocessing_texts import preprocess_text_fraud_detection
+from core.get_tf_serving.tokenizer import get_tokenizer
+
+tokenizer_mbti = get_tokenizer(settings.neural_tf.mbti_neural.path_tokenizer_mbti)
+tokenizer_fraud_detection = get_tokenizer(settings.neural_tf.fraud_detection_neural.path_tokenizer_fraud_detection)
+
+
+def get_response(request, timeout=5):
+    url = f"{settings.neural_tf.host}:{settings.neural_tf.port}"
+    channel = grpc.insecure_channel(url)
+    predict_service = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+    response = predict_service.Predict(request, timeout=timeout)
+    response_output_name = list(dict(response.outputs).keys())[0]  # выходы
+    return response, response_output_name
+
+
+def get_result_mbti(texts: list):
+    pass
+
+
+def get_result_fraud_detection(texts: list):
+    processed_texts = []
+    for text in texts:
+        processed_texts.append(preprocess_text_fraud_detection(text))
+    tokenized_texts = tokenizer_fraud_detection.to_data_for_model(processed_texts)
+    request = get_predict_request(tokenized_texts,
+                                  settings.neural_tf.fraud_detection_neural.name_model,
+                                  settings.neural_tf.fraud_detection_neural.signature_name,
+                                  settings.neural_tf.fraud_detection_neural.input_name,)
+    setting_timeout = settings.neural_tf.fraud_detection_neural.timeout
+    response, output_name = get_response(request, setting_timeout)
+    output_proto = response.outputs[output_name]
+    y_proba = np.array(output_proto.float_val).round(4)
+    return y_proba

@@ -22,3 +22,9 @@ class Tokenizer:
         self.tokenizer = data['tokenizer']
         self.vocab_size = data['vocab_size']
         self.max_len = data['max_len']
+
+
+def get_tokenizer(path):
+    tokenizer = Tokenizer(path)
+    tokenizer.load()
+    return tokenizer

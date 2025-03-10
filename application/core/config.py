@@ -68,17 +68,19 @@ class JWTConfig(BaseModel):
 
 
 class MbtiNeural(BaseModel):
-    path_tokenizer_mbti: str = "./tokenizer/tokenizer_mbti.pickle"
+    path_tokenizer_mbti: str = "../../tokenizers/tokenizer_mbti.pickle"
     name_model: str = 'mbti'
     signature_name: str = 'serving_default'
     input_name: str = 'embedding_2_input'
+    timeout: int = 40
 
 
 class FraudDetectionNeural(BaseModel):
-    path_tokenizer_fraud_detection: str = "./tokenizer/tokenizer_fraud_detection.pickle"
+    path_tokenizer_fraud_detection: str = "../../tokenizers/tokenizer_fraud_detection.pickle"
     name_model: str = 'fraud_detection'
     signature_name: str = 'serving_default'
     input_name: str = 'embedding_input'
+    timeout: int = 30
 
 
 class NeuralTfConfig(BaseModel):
