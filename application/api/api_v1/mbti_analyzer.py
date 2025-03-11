@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.get_tf_serving.get_result import get_result_mbti
 from core.get_tf_serving.production_result import convert_to_prod_res_mbti
 from core.models import db_helper
-from core.schemas.download_requirement_bd import RequestData
+from core.schemas.tf_analyzers import RequestDataMbti, ResponseDataMbti
 from core.schemas.user import User
 from crud import users as users_crud
 
@@ -13,10 +13,10 @@ from crud import users as users_crud
 router_mbti = APIRouter(tags=["mbti"])
 
 
-@router_mbti.post("/mbti_analyzer")
+@router_mbti.post("/mbti_analyzer", response_model=ResponseDataMbti)
 async def submit_data(
         # session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-        request_data: RequestData,
+        request_data: RequestDataMbti,
         current_user: Annotated[User, Depends(users_crud.get_current_user)],
 ):
     writing_database = False  # Переменная для отслеживания успешности записи

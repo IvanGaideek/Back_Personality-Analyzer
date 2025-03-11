@@ -74,7 +74,6 @@ async def read_users_me(
 
 @router.get("/profile", response_model=User)
 async def get_user_profile(
-        session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         current_user: Annotated[User, Depends(users_crud.get_current_user)]
 ):
     try:
