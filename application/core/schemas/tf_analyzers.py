@@ -20,12 +20,12 @@ class RequestDataFraudDetect(BaseModel):
 
 
 class ResponseDataMbti(BaseModel):
-    analysis: str
+    analysis: list[str]
     person: str
     writingDatabase: bool
 
 
 class ResponseDataFraudDetect(BaseModel):
-    analysis: bool  # True if fraud, False if not
+    analysis: list[bool]  # True if fraud, False if not
     person: str
     writingDatabase: bool
