@@ -37,8 +37,9 @@ async def submit_data(
             "person": person,
             "writingDatabase": writing_database
         }
-
-    except Exception as e:
+    except HTTPException as e:
+        raise e
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Something went wrong, please contact us if the problem still occurs."
