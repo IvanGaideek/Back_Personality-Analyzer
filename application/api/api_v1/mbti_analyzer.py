@@ -29,7 +29,7 @@ async def submit_data(
         analysis = get_result_mbti([text])
         analysis = convert_to_prod_res_mbti(analysis)
         # Логика обработки запроса
-        # Например, можно сохранять данные в указанной таблице
+        # Например, можно сохранять данные в указанной таблице см. writing_database
         return {
             "analysis": analysis,
             "person": person,

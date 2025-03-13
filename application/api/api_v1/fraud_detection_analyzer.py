@@ -30,7 +30,7 @@ async def submit_data(
         analysis = get_result_fraud_detection([text])
         analysis = convert_to_prod_res_fraud_detection(analysis)
         # Логика обработки запроса
-        # Например, можно сохранять данные в указанной таблице
+        # Например, можно сохранять данные в указанной таблице см. writing_database
 
         return {
             "analysis": analysis,
