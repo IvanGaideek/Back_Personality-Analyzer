@@ -13,13 +13,13 @@ from crud import users as users_crud
 router_fraud_detection = APIRouter(tags=["fraud_detection"])
 
 
-@router_fraud_detection.post("/fraud_detection_analyzer", response_model=ResponseDataFraudDetect)
+@router_fraud_detection.post("/fraud-detection-analyzer", response_model=ResponseDataFraudDetect)
 async def submit_data(
         # session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         request_data: RequestDataFraudDetect,
         current_user: Annotated[User, Depends(users_crud.get_current_user)],
 ):
-    writing_database = False  # Переменная для отслеживания успешности записи
+    writing_database = request_data.writingDatabase  # Переменная для отслеживания успешности записи
     try:
         # Получение данных пользователя
         user_id = current_user.id

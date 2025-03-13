@@ -9,17 +9,16 @@ from core.schemas.tf_analyzers import RequestDataMbti, ResponseDataMbti
 from core.schemas.user import User
 from crud import users as users_crud
 
-
 router_mbti = APIRouter(tags=["mbti"])
 
 
-@router_mbti.post("/mbti_analyzer", response_model=ResponseDataMbti)
+@router_mbti.post("/mbti-analyzer", response_model=ResponseDataMbti)
 async def submit_data(
         # session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
         request_data: RequestDataMbti,
         current_user: Annotated[User, Depends(users_crud.get_current_user)],
 ):
-    writing_database = False  # Переменная для отслеживания успешности записи
+    writing_database = request_data.writingDatabase  # Переменная для отслеживания успешности записи
     try:
         # Получение данных пользователя
         user_id = current_user.id
@@ -31,7 +30,6 @@ async def submit_data(
         analysis = convert_to_prod_res_mbti(analysis)
         # Логика обработки запроса
         # Например, можно сохранять данные в указанной таблице
-
         return {
             "analysis": analysis,
             "person": person,

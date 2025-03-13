@@ -11,12 +11,14 @@ class RequestDataMbti(BaseModel):
     text: str
     person: str
     loading_database: LoadingDatabase
+    writingDatabase: bool
 
 
 class RequestDataFraudDetect(BaseModel):
     text: str
     person: str
     loading_database: LoadingDatabase
+    writingDatabase: bool
 
 
 class ResponseDataMbti(BaseModel):
