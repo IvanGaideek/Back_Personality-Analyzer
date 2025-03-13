@@ -90,3 +90,11 @@ async def get_user_profile(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while fetching user profile"
         )
+
+
+@router.delete("/profile", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user_profile(
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+        current_user: Annotated[User, Depends(users_crud.get_current_user)]
+):
+    await users_crud.delete_user(session=session, user=current_user)

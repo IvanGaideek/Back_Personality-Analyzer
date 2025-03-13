@@ -79,8 +79,8 @@ async def authenticate_user(
 
 
 async def get_current_user(
-    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
-    authorization: str
+        session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+        authorization: str
 ) -> User:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(
@@ -105,4 +105,35 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"}
+        )
+
+
+async def delete_user(session,
+                      user: Optional[User]) -> None:
+    try:
+        # Удаление связанных записей:
+        # Пример: Удаление всех записей в `UserTable` (заменить на свои модели)
+        # Например, если у пользователя могут быть сохраненные таблицы:
+        # await session.execute(select(UserTable).where(UserTable.user_id == user_id))
+        # related_records = await session.scalars(stmt)
+        # for record in related_records:
+        #     # Удаляем связанные записи
+        #     session.delete(record)
+
+        # Удаляем пользователя
+        await session.delete(user)
+
+        # Коммитим изменения
+        await session.commit()
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not delete user. Integrity error."
+        )
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred: {str(e)}"
         )
