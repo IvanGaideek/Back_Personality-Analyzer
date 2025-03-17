@@ -2,6 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.analyze_phone.find_inf_phone import get_information_about_phone
 from core.get_tf_serving.get_result import get_result_fraud_detection
 from core.get_tf_serving.production_result import convert_to_prod_res_fraud_detection
 from core.models import db_helper
@@ -20,6 +21,7 @@ async def submit_data(
         current_user: Annotated[User, Depends(users_crud.get_current_user)],
 ):
     writing_database = request_data.writingDatabase  # Переменная для отслеживания успешности записи
+    flag_number = request_data.needAnalysisPhone
     try:
         # Получение данных пользователя
         user_id = current_user.id
@@ -31,13 +33,27 @@ async def submit_data(
         analysis = convert_to_prod_res_fraud_detection(analysis)
         # Логика обработки запроса
         # Например, можно сохранять данные в указанной таблице см. writing_database
+        response = {
+                "analysis": analysis,
+                "person": person,
+                "writingDatabase": writing_database,
+                "phone": None,
+                "locationPhone": None,
+                "providerPhone": None,
+                "fraudDetectionPhone": None,
+                "messagePhone": None
+            }
 
-        return {
-            "analysis": analysis,
-            "person": person,
-            "writingDatabase": writing_database
-        }
-
+        if flag_number:
+            inf_about_phone: dict = get_information_about_phone(text)
+            # Логика обработки запроса БД
+            response["phone"] = inf_about_phone['phone']
+            response["locationPhone"] = inf_about_phone['country']
+            response["providerPhone"] = inf_about_phone['carrier']
+            response["fraudDetectionPhone"] = False
+            response["messagePhone"] = inf_about_phone['message']
+        response["writingInfPhoneDatabase"] = False
+        return response
     except HTTPException as e:
         raise e
     except Exception:

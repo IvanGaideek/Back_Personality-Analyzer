@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class LoadingDatabase(BaseModel):
@@ -19,6 +20,11 @@ class RequestDataFraudDetect(BaseModel):
     person: str
     loading_database: LoadingDatabase
     writingDatabase: bool
+    needAnalysisPhone: bool
+    writingPhoneColumn: str
+    locationPhoneColumn: str
+    providerPhoneColumn: str
+    fraudDetectionPhoneColumn: str
 
 
 class ResponseDataMbti(BaseModel):
@@ -31,3 +37,9 @@ class ResponseDataFraudDetect(BaseModel):
     analysis: list[bool]  # True if fraud, False if not
     person: str
     writingDatabase: bool
+    phone: Optional[str]
+    writingInfPhoneDatabase: bool
+    locationPhone: Optional[str]
+    providerPhone: Optional[str]
+    fraudDetectionPhone: Optional[bool]
+    messagePhone: Optional[str]
