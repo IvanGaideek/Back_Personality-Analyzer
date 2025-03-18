@@ -24,7 +24,6 @@ class RequestDataFraudDetect(BaseModel):
     writingPhoneColumn: str
     locationPhoneColumn: str
     providerPhoneColumn: str
-    fraudDetectionPhoneColumn: str
 
 
 class ResponseDataMbti(BaseModel):
@@ -41,5 +40,4 @@ class ResponseDataFraudDetect(BaseModel):
     writingInfPhoneDatabase: bool
     locationPhone: Optional[str]
     providerPhone: Optional[str]
-    fraudDetectionPhone: Optional[bool]
     messagePhone: Optional[str]

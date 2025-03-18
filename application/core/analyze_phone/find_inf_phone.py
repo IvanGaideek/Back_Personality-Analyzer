@@ -17,7 +17,7 @@ def get_information_about_phone(text) -> dict:
                    geocoder.description_for_number(obj_analyze_phone, "en")  # страна + город
         return {'phone': phone, 'country': region_v, 'carrier': carrier_v, 'message': 'success'}
     except Exception:
-        return {'phone': None, 'country': None, 'carrier': None, 'message': 'error'}
+        return {'phone': phone, 'country': None, 'carrier': None, 'message': 'error'}
 
 
 def get_num_phone(text):
@@ -30,9 +30,8 @@ def get_num_phone(text):
 
     # Удаляем лишние символы и пробелы
     digits = re.sub(r'\D', '', raw_phone_number)
-
     # Преобразуем в формат +7(XXX)YYY-ZZ-NN
-    if len(digits) == 11 and digits.startswith('7'):
+    if len(digits) == 11 and (digits.startswith('7') or digits.startswith('8')):
         formatted_number = f"+7({digits[1:4]}){digits[4:7]}-{digits[7:9]}-{digits[9:11]}"
     elif len(digits) == 10:  # Если номер без кода страны
         formatted_number = f"+7({digits[0:3]}){digits[3:6]}-{digits[6:8]}-{digits[8:10]}"

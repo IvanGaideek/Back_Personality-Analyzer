@@ -40,7 +40,6 @@ async def submit_data(
                 "phone": None,
                 "locationPhone": None,
                 "providerPhone": None,
-                "fraudDetectionPhone": None,
                 "messagePhone": None
             }
 
@@ -50,7 +49,6 @@ async def submit_data(
             response["phone"] = inf_about_phone['phone']
             response["locationPhone"] = inf_about_phone['country']
             response["providerPhone"] = inf_about_phone['carrier']
-            response["fraudDetectionPhone"] = False
             response["messagePhone"] = inf_about_phone['message']
         response["writingInfPhoneDatabase"] = False
         return response
